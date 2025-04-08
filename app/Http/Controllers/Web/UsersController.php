@@ -198,23 +198,44 @@ class UsersController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
         // Check if user has Employee role
         if (!Auth::user()->hasRole('Employee') && !Auth::user()->hasRole('Admin')) {
             return redirect('/')->with('error', 'You do not have permission to access this page.');
         }
         
-        // Get all users with Customer role
-        $users = User::role('Customer')->get();
+        // Get filter parameter
+        $filter = $request->query('filter', 'all');
+        
+        // If user is an Admin, they can see all users or filter by role
+        if (Auth::user()->hasRole('Admin')) {
+            if ($filter === 'customers') {
+                $users = User::role('Customer')->get();
+                $activeFilter = 'customers';
+            } elseif ($filter === 'employees') {
+                $users = User::role('Employee')->get();
+                $activeFilter = 'employees';
+            } elseif ($filter === 'admins') {
+                $users = User::role('Admin')->get();
+                $activeFilter = 'admins';
+            } else {
+                $users = User::all();
+                $activeFilter = 'all';
+            }
+        } else {
+            // Regular employees can only see customers
+            $users = User::role('Customer')->get();
+            $activeFilter = 'customers';
+        }
         
         // Debug information
         if ($users->isEmpty()) {
-            // If no customers found, show a message
-            return view('users.list', compact('users'))->with('info', 'No customers found in the system.');
+            // If no users found, show a message
+            return view('users.list', compact('users', 'activeFilter'))->with('info', 'No users found with the selected filter.');
         }
         
-        return view('users.list', compact('users'));
+        return view('users.list', compact('users', 'activeFilter'));
     }
 
     /**
@@ -224,12 +245,8 @@ class UsersController extends Controller
      */
     public function create()
     {
-        // Check if user has Employee role
-        if (!Auth::user()->hasRole('Employee') && !Auth::user()->hasRole('Admin')) {
-            return redirect('/')->with('error', 'You do not have permission to access this page.');
-        }
-        
-        return view('users.create');
+        // No one can create new customers now
+        return redirect()->route('users_index')->with('error', 'Adding new customers is disabled.');
     }
 
     /**
@@ -240,29 +257,8 @@ class UsersController extends Controller
      */
     public function store(Request $request)
     {
-        // Check if user has Employee role
-        if (!Auth::user()->hasRole('Employee') && !Auth::user()->hasRole('Admin')) {
-            return redirect('/')->with('error', 'You do not have permission to access this page.');
-        }
-        
-        $request->validate([
-            'name' => 'required',
-            'email' => 'required|email|unique:users,email',
-            'password' => 'required|min:8|confirmed',
-        ]);
-
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-            'credit' => 0,
-        ]);
-
-        // Assign Customer role to new user
-        $user->assignRole('Customer');
-
-        return redirect()->route('users_index')
-            ->with('success', 'Customer created successfully.');
+        // No one can create new customers now
+        return redirect()->route('users_index')->with('error', 'Adding new customers is disabled.');
     }
 
     /**
@@ -386,9 +382,18 @@ class UsersController extends Controller
      */
     public function showAddCredit(User $user)
     {
-        // Check if user has Employee role
-        if (!Auth::user()->hasRole('Employee') && !Auth::user()->hasRole('Admin')) {
+        // Check if user has Employee role and is not an Admin
+        if (Auth::user()->hasRole('Admin')) {
+            return redirect()->route('users_index')->with('error', 'Admins are not allowed to add credit to users.');
+        }
+        
+        if (!Auth::user()->hasRole('Employee')) {
             return redirect('/')->with('error', 'You do not have permission to access this page.');
+        }
+        
+        // Only allow adding credit to customers
+        if (!$user->hasRole('Customer')) {
+            return redirect()->route('users_index')->with('error', 'Credit can only be added to customers.');
         }
         
         return view('users.add_credit', compact('user'));
@@ -403,9 +408,18 @@ class UsersController extends Controller
      */
     public function addCredit(Request $request, User $user)
     {
-        // Check if user has Employee role
-        if (!Auth::user()->hasRole('Employee') && !Auth::user()->hasRole('Admin')) {
+        // Check if user has Employee role and is not an Admin
+        if (Auth::user()->hasRole('Admin')) {
+            return redirect()->route('users_index')->with('error', 'Admins are not allowed to add credit to users.');
+        }
+        
+        if (!Auth::user()->hasRole('Employee')) {
             return redirect('/')->with('error', 'You do not have permission to access this page.');
+        }
+        
+        // Only allow adding credit to customers
+        if (!$user->hasRole('Customer')) {
+            return redirect()->route('users_index')->with('error', 'Credit can only be added to customers.');
         }
         
         $request->validate([
