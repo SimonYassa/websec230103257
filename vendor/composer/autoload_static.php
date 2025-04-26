@@ -529,9 +529,11 @@ class ComposerStaticInit88970a0117c062eed55fa8728fc43833
     public static $classMap = array (
         'App\\Http\\Controllers\\Controller' => __DIR__ . '/../..' . '/app/Http/Controllers/Controller.php',
         'App\\Http\\Controllers\\Web\\ProductsController' => __DIR__ . '/../..' . '/app/Http/Controllers/Web/ProductsController.php',
+        'App\\Http\\Controllers\\Web\\PurchasesController' => __DIR__ . '/../..' . '/app/Http/Controllers/Web/PurchasesController.php',
         'App\\Http\\Controllers\\Web\\UsersController' => __DIR__ . '/../..' . '/app/Http/Controllers/Web/UsersController.php',
         'App\\Http\\Kernel' => __DIR__ . '/../..' . '/app/Http/Kernel.php',
         'App\\Http\\Middleware\\CheckRole' => __DIR__ . '/../..' . '/app/Http/Middleware/CheckRole.php',
+        'App\\Mail\\VerificationEmail' => __DIR__ . '/../..' . '/app/Mail/VerificationEmail.php',
         'App\\Models\\Product' => __DIR__ . '/../..' . '/app/Models/Product.php',
         'App\\Models\\Purchase' => __DIR__ . '/../..' . '/app/Models/Purchase.php',
         'App\\Models\\User' => __DIR__ . '/../..' . '/app/Models/User.php',

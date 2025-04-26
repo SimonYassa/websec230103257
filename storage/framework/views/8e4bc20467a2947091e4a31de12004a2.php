@@ -79,6 +79,7 @@
                                         </div>
                                         <div class="btn-group">
                                             <a href="<?php echo e(route('products_show', $product->id)); ?>" class="btn btn-success">View Details</a>
+                                            <a href="<?php echo e(route('add-stock', $product->id)); ?>" class="btn btn-success">Add Stock</a>
                                             
                                             <?php if(Auth::user() && (Auth::user()->hasRole('Employee') || Auth::user()->hasRole('Admin'))): ?>
                                             <a href="<?php echo e(route('products_edit', $product->id)); ?>" class="btn btn-secondary">Edit</a>
