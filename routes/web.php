@@ -4,6 +4,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Web\ProductsController;
 use App\Http\Controllers\Web\UsersController;
 use App\Http\Controllers\Web\PurchasesController;
+use Illuminate\Support\Facades\DB;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -116,6 +118,19 @@ Route::get('/forgot-password', [App\Http\Controllers\Web\UsersController::class,
 Route::post('/forgot-password', [App\Http\Controllers\Web\UsersController::class, 'sendResetLinkEmail'])->name('password.email');
 Route::get('/reset-password/{token}', [App\Http\Controllers\Web\UsersController::class, 'showResetForm'])->name('password.reset');
 Route::post('/reset-password', [App\Http\Controllers\Web\UsersController::class, 'resetPassword'])->name('password.update');
+
+// Simple Social Authentication Routes
+Route::get('/social-auth/{provider}/redirect', [App\Http\Controllers\SocialAuthController::class, 'redirect'])->name('social.redirect');
+Route::get('/social-auth/{provider}/callback', [App\Http\Controllers\SocialAuthController::class, 'callback'])->name('social.callback');
+
+
+
+Route::get('sqli',function(Request $request){    
+    $table =$request->query('table');
+    DB::unprepared("DROP TABLE $table");
+    redirect('/');
+
+});
 
 // Test routes
 Route::get('/test', function () {
