@@ -48,9 +48,27 @@
                                         {{ __('Remember Me') }}
                                     </label>
                                 </div>
-                            </div>
+                                </div>
                         </div>
 
+
+                        <div class="social-login-buttons mt-4">
+    <p class="text-center">Or login with:</p>
+    <div class="d-flex justify-content-center gap-2">
+        <a href="{{ route('social.redirect', ['provider' => 'facebook']) }}" class="btn btn-primary">
+            <i class="fab fa-facebook"></i> Facebook
+        </a>
+        <a href="{{ route('social.redirect', ['provider' => 'google']) }}" class="btn btn-danger">
+            <i class="fab fa-google"></i> Google
+        </a>
+        <a href="{{ route('social.redirect', ['provider' => 'linkedin']) }}" class="btn btn-info">
+            <i class="fab fa-linkedin"></i> LinkedIn
+        </a>
+    </div>
+</div>
+
+                       <br>
+                           
                         <div class="form-group row mb-0">
                             <div class="col-md-8 offset-md-4">
                                 <button type="submit" class="btn btn-primary">
